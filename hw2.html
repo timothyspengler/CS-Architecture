@@ -1,0 +1,153 @@
+<!-- Timothy Spengler Homework 2 -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <meta charset="utf-8" />
+  <head>
+    <title>Homework 2</title>
+    <link rel="stylesheet" href="main.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script>
+      var employees = [];
+
+      // Called onload
+      function checkBrowswer() {
+        if (navigator.userAgent.indexOf("Chrome") != -1)
+          $("#browser").html(
+            "<img src='https://cdn0.iconfinder.com/data/icons/jfk/512/chrome-512.png' class='browserIcon' />"
+          );
+        else if (navigator.userAgent.indexOf("Firefox") != -1)
+          $("#browser").html(
+            "<img src='https://user-media-prod-cdn.itsre-sumo.mozilla.net/uploads/products/2019-10-21-15-00-41-7478b4.png' class='browserIcon' />"
+          );
+        else if (navigator.userAgent.indexOf("Safari") != -1)
+          $("#browser").html(
+            "<img src='https://cdn.osxdaily.com/wp-content/uploads/2014/06/safari-icon.png' class='browserIcon' />"
+          );
+        else if (navigator.userAgent.indexOf("Opera") != -1)
+          $("#browser").html(
+            "<img src='https://cdn1.iconfinder.com/data/icons/android-png/256/Android-Opera-Mini.png' class='browserIcon' />"
+          );
+        else
+          $("#browser").html(
+            "<img src='https://cdn.shopify.com/s/files/1/1061/1924/products/2_large.png?v=1571606116' class='browserIcon' />"
+          ); // default image
+      }
+
+      $(document).ready(function() {
+        $("#submitButton").click(function() {
+          var date = new Date();
+          var firstName = $("#firstNameInput").val();
+          var lastName = $("#lastNameInput").val();
+          var department = $("#department option:selected").text();
+          var id = Math.floor(Math.random() * 99999999 + 10000000);
+          var hireInfo = date.toLocaleDateString('en',{weekday: 'short', month: 'short', day: 'numeric', year: 'numeric'}); 
+
+          var personObject = {
+            firstName: firstName,
+            lastName: lastName,
+            department: department,
+            id: id,
+            hireInfo: hireInfo
+          };
+
+          
+
+          var passed = false;
+          while (!passed) {
+            var duplicate = false;
+            for (var i = 0; i < employees.length; i++) {
+              if (employees[i].id == id) {
+                id = Math.floor(Math.random() * 90000000 + 10000000);
+                personObject.id = id;
+                duplicate = true;
+                break;
+              }
+            }
+            if (!duplicate) {
+              passed = true;
+              employees.push(personObject);
+            }
+          }
+
+          var xhr = new XMLHttpRequest();
+          var url = 'http://localhost/project/firstProject.php';
+          xhr.open("POST", url, true);
+          xhr.setRequestHeader("Content-Type", "application/json");
+          xhr.onreadystatechange = function() {
+              if(xhr.readyState === 4 && xhr.status === 200){
+                console.log(xhr.responseText);
+              }
+          };
+          var data = JSON.stringify(personObject);
+          xhr.send(data);
+
+          $("#employeeHeader").show();
+          $("#nameInfo").text("Name: " + lastName + ", " + firstName);
+          $("#departmentInfo").text("Department: " + department);
+          $("#idInfo").text("Employee ID: " + id);
+          $("#hireInfo").text("Hire Date: " + hireInfo);
+          $("#totalInfo").text("Total Employees: " + employees.length);
+          
+        });
+      });
+    </script>
+  </head>
+
+  <body onload="checkBrowswer()">
+    <div id="form">
+      <h1 id="titleHeader">Homework 2</h1>
+      <form>
+        <h2>Add an Employee</h2>
+        <label id="firstNameLabel" class="formLabel">First Name:</label>
+        <br />
+        <input
+          type="text"
+          name="firstName"
+          id="firstNameInput"
+          placeholder="First Name"
+          required
+        />
+        <br />
+        <label id="lastNameLabel" class ="formLabel"
+          >Last Name:
+          <br />
+          <input
+            type="text"
+            name="lastName"
+            id="lastNameInput"
+            placeholder="Last Name"
+            required
+          />
+        </label>
+        <br />
+        <label for="department" id="departmentLabel" class="formLabel"
+          >Department:
+          <br />
+          <select id="department">
+            <option value="ComputerScience">Computer Science</option>
+            <option value="Biology">Biology</option>
+            <option value="English">English</option>
+            <option value="Business">Business</option>
+          </select>
+        </label>
+        <br />
+        <button type="button" name="submit" id="submitButton">Submit --></button>
+        <div id="browser">x</div>
+      </form>
+      <br />
+      <div id="employeeInfo">
+        <h1 id="employeeHeader" hidden>Employee added</h1>
+        <label id="nameInfo" class="personInfo"></label>
+        <br />
+        <label id="departmentInfo" class="personInfo"></label>
+        <br />
+        <label id="idInfo" class="personInfo"></label>
+        <br />
+        <label id="hireInfo" class="personInfo"></label>
+        <br />
+        <label id="totalInfo" class="personInfo"></label>
+      </div>
+    </div>
+  </body>
+</html>
